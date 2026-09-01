@@ -1,10 +1,10 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class Joystick extends StatefulWidget {
+  final Alignment position;
   final  ValueChanged<Alignment> inputData;
-  const Joystick({required this.inputData, super.key});
+  const Joystick({required this.position, required this.inputData, super.key});
 
   @override
   State<Joystick> createState() => _JoystickState();
@@ -19,7 +19,7 @@ class _JoystickState extends State<Joystick> {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: Alignment(-0.8, 0.6),
+      alignment: widget.position,
 
       child: Container(
         width: controllerSize,

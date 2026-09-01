@@ -1,9 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class ButtonDirections extends StatefulWidget {
+  final Alignment position;
   final ValueChanged<Alignment> inputData;
-  const ButtonDirections({required this.inputData, super.key});
+  const ButtonDirections({required this.position, required this.inputData, super.key});
 
   @override
   State<ButtonDirections> createState() => _ButtonDirectionsState();
@@ -34,7 +34,7 @@ class _ButtonDirectionsState extends State<ButtonDirections> {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: Alignment(-0.8, 0.95),
+      alignment: widget.position,
 
       child: Container(
         width: buttonsContainer,
@@ -50,19 +50,19 @@ class _ButtonDirectionsState extends State<ButtonDirections> {
             return Align(
               alignment: b["alignment"],
               child: GestureDetector(
-                onPanStart: (d){
-                  widget.inputData(b["alignment"]);
-                },
-                
-                onPanUpdate: (d){
+                onPanStart: (d) {
                   widget.inputData(b["alignment"]);
                 },
 
-                onPanCancel: (){
+                onPanUpdate: (d) {
+                  widget.inputData(b["alignment"]);
+                },
+
+                onPanCancel: () {
                   widget.inputData(Alignment(0, 0));
                 },
 
-                onPanEnd: (d){
+                onPanEnd: (d) {
                   widget.inputData(Alignment(0, 0));
                 },
 

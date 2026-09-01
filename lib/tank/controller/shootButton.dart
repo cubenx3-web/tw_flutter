@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class Shootbutton extends StatefulWidget {
+  final Alignment position;
   final ValueChanged<bool> shootData;
-  const Shootbutton({required this.shootData, super.key});
+  const Shootbutton({required this.position, required this.shootData, super.key});
 
   @override
   State<Shootbutton> createState() => _ShootbuttonState();
@@ -13,24 +14,20 @@ class _ShootbuttonState extends State<Shootbutton> {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: Alignment(0.8, 0.9),
+      alignment: widget.position,
       child: GestureDetector(
         onPanStart: (d) {
           setState(() {
             widget.shootData(true);
           });
         },
-        onPanUpdate: (d) {
-          setState(() {
-            widget.shootData(true);
-          });
-        },
+        
         onPanEnd: (d) {
           setState(() {
             widget.shootData(false);
           });
         },
-        onPanCancel: (){
+        onPanCancel: () {
           setState(() {
             widget.shootData(false);
           });
