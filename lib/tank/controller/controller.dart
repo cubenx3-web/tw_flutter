@@ -57,11 +57,11 @@ class _ControllerState extends State<Controller> {
 
       "d": {
         "directions": ButtonDirections(
-          position: Alignment(0.8, 0.9),
+          position: Alignment(1, 1),
           inputData: widget.inputData,
         ),
         "shoot": Shootbutton(
-          position: Alignment(-0.8, 0.9),
+          position: Alignment(-1, 1),
           shootData: widget.shootData,
         ),
       },

@@ -8,12 +8,16 @@ import 'package:flutter/services.dart';
 class TankBody extends StatefulWidget {
   final double tx;
   final double ty;
-  final ValueChanged<Alignment> tankPosition;
+  final double roomWidth;
+  final double roomHeight;
+  final ValueChanged<Offset> tankPosition;
   final ValueChanged<double> tankAngle;
   final ValueChanged<bool> shoot;
 
   const TankBody({
     required this.shoot,
+    required this.roomHeight,
+    required this.roomWidth,
     required this.tx,
     required this.ty,
     required this.tankPosition,
@@ -26,18 +30,20 @@ class TankBody extends StatefulWidget {
 }
 
 class _TankBodyState extends State<TankBody> {
-  late Alignment tankPosition = Alignment(0, 0);
-  late double tx = widget.tx;
-  late double ty = widget.tx;
+  late Offset tankPosition = Offset(0, 0);
+  late double tx = (widget.roomWidth - (tankSize * 2)) / 2;
+  late double ty = (widget.roomHeight - (tankSize * 2)) / 2;
   late Duration speed = Duration(milliseconds: 50);
-  late double tankSize = 30.0;
+  late double tankSize = 30;
   late double tankTurn = 0.0;
-  late double sharpTurns = 0.06;
-  final double stepSize = 0.008;
+  late double sharpTurns = 0.03;
+  final double stepSize = 3;
   late bool isShoot = false;
+
 
   final FocusNode f = FocusNode();
   Timer? gameLoopTimer;
+  
 
   @override
   void initState() {
@@ -62,17 +68,11 @@ class _TankBodyState extends State<TankBody> {
       if (widget.ty < 0) {
         ty -= (cos(tankTurn) * (widget.ty * -stepSize));
         tx += (sin(tankTurn) * (widget.ty * -stepSize));
-
-        tx = tx.clamp(-1, 1);
-        ty = ty.clamp(-1, 1);
       }
 
       if (widget.ty > 0) {
         tx -= (sin(tankTurn) * (widget.ty * stepSize));
         ty += (cos(tankTurn) * (widget.ty * stepSize));
-
-        tx = tx.clamp(-1, 1);
-        ty = ty.clamp(-1, 1);
       }
 
       tankTurn += (widget.tx * 0.05);
@@ -92,29 +92,29 @@ class _TankBodyState extends State<TankBody> {
           pressedKeys.contains(LogicalKeyboardKey.keyW)) {
         ty -= (cos(tankTurn) * (stepSize));
         tx += (sin(tankTurn) * (stepSize));
-
-        tx = tx.clamp(-1, 1);
-        ty = ty.clamp(-1, 1);
       }
 
       if (pressedKeys.contains(LogicalKeyboardKey.arrowDown) ||
           pressedKeys.contains(LogicalKeyboardKey.keyS)) {
         tx -= (sin(tankTurn) * (stepSize));
         ty += (cos(tankTurn) * (stepSize));
-
-        tx = tx.clamp(-1, 1);
-        ty = ty.clamp(-1, 1);
       }
 
+      tx = tx.clamp(0, widget.roomWidth - (tankSize * 2)+5);
+      ty = ty.clamp(0, widget.roomHeight - (tankSize * 2)+5);
+
       widget.tankAngle(tankTurn);
-      widget.tankPosition(Alignment(tx, ty));
+      widget.tankPosition(Offset(tx, ty));
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedAlign(
-      alignment: Alignment(tx, ty),
+    return AnimatedPositioned(
+      // alignment: Alignment(tx, ty),
+
+      left: tx,
+      top: ty,
 
       duration: speed,
       curve: Curves.linear,
@@ -153,7 +153,7 @@ class _TankBodyState extends State<TankBody> {
 }
 
 class Gun extends StatefulWidget {
-  const Gun({super.key});
+  const Gun({ super.key});
 
   @override
   State<Gun> createState() => _GunState();

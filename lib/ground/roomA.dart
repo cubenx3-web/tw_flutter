@@ -13,12 +13,16 @@ class RoomA extends StatefulWidget {
 class _RoomAState extends State<RoomA> {
   late double tx = 0;
   late double ty = 0;
+  late double roomWidth = 600;
+  late double roomHeight = 300;
   late bool shooting = false;
   late double tankAngle = 0.0;
-  late Alignment tankPosition = Alignment(0, 0);
+  late Offset tankPosition = Offset(0, 0);
 
   late int bulletsShot = 0;
   final Map<int, Bullet> bullets = <int, Bullet>{};
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -29,72 +33,91 @@ class _RoomAState extends State<RoomA> {
       ),
 
       body: Center(
-        child: Stack(
-          children: [
-            TankBody(
-              tx: tx.clamp(-1, 1),
-              ty: ty.clamp(-1, 1),
-              tankAngle: (angle) {
-                setState(() {
-                  tankAngle = angle;
-                });
-              },
-              tankPosition: (position) {
-                setState(() {
-                  tankPosition = position;
-                });
-              },
-              shoot: (isShooting) {
-                setState(() {
-                  shooting = isShooting;
-                  if (shooting) {
-                    bullets[bulletsShot] = Bullet(
-                      index: bulletsShot,
-                      angle: tankAngle,
-                      bulletPosition: tankPosition,
-                      key: ValueKey(bulletsShot),
-                      endBullet: (int index) {
-                        setState(() {
-                          bullets.remove(index);
-                        });
-                      },
-                    );
-                    bulletsShot++;
-                  }
-                });
-              },
-            ),
+        child: Container(
+          width: roomWidth,
+          height: roomHeight,
 
-            Controller(
-              inputData: (position) {
-                setState(() {
-                  tx = position.x;
-                  ty = position.y;
-                });
-              },
-              shootData: (isShooting) {
-                setState(() {
-                  shooting = isShooting;
-                  if (shooting) {
-                    bullets[bulletsShot] = Bullet(
-                      index: bulletsShot,
-                      angle: tankAngle,
-                      bulletPosition: tankPosition,
-                      key: ValueKey(bulletsShot),
-                      endBullet: (int index) {
-                        setState(() {
-                          bullets.remove(index);
-                        });
-                      },
-                    );
-                    bulletsShot++;
-                  }
-                });
-              },
-            ),
+          padding: EdgeInsets.all(10),
 
-            Stack(children: bullets.values.toList()),
-          ],
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.white),
+            borderRadius: BorderRadius.circular(20),
+          ),
+
+          child: Stack(
+            children: [
+              Stack(children: bullets.values.toList()),
+              TankBody(
+                roomHeight: roomHeight,
+                roomWidth: roomWidth,
+                tx: tx,
+                ty: ty,
+                tankAngle: (angle) {
+                  setState(() {
+                    tankAngle = angle;
+                  });
+                },
+                tankPosition: (position) {
+                  setState(() {
+                    tankPosition = position;
+                  });
+                },
+                shoot: (isShooting) {
+                  setState(() {
+                    shooting = isShooting;
+                    if (shooting) {
+                      bullets[bulletsShot] = Bullet(
+                        roomHeight: roomHeight,
+                        roomWidth: roomWidth,
+                        index: bulletsShot,
+                        angle: tankAngle,
+                        bulletPosition: tankPosition,
+                        key: ValueKey(bulletsShot),
+                        endBullet: (int index) {
+                          setState(() {
+                            bullets.remove(index);
+                          });
+                        },
+                      );
+                      bulletsShot++;
+                    }
+                  });
+                },
+              ),
+
+              Controller(
+                inputData: (position) {
+                  setState(() {
+                    tx = position.x;
+                    ty = position.y;
+                  });
+                },
+                shootData: (isShooting) {
+                  setState(() {
+                    shooting = isShooting;
+                    if (shooting) {
+                      bullets[bulletsShot] = Bullet(
+                        roomWidth: roomWidth,
+                        roomHeight: roomHeight,
+                        index: bulletsShot,
+                        angle: tankAngle,
+                        bulletPosition: tankPosition,
+                        key: ValueKey(bulletsShot),
+                        endBullet: (int index) {
+                          setState(() {
+                            bullets.remove(index);
+                          });
+                        },
+                      );
+                      bulletsShot++;
+                    }
+                  });
+                },
+              ),
+
+              
+            ],
+          ),
         ),
       ),
     );

@@ -1,15 +1,19 @@
-import 'dart:async';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 class Bullet extends StatefulWidget {
-  final Alignment bulletPosition;
+  final Offset bulletPosition;
   final double angle;
+  final double roomWidth;
+  final double roomHeight;
   final ValueChanged<int> endBullet;
   final int index;
+
   const Bullet({
     required this.index,
+    required this.roomHeight,
+    required this.roomWidth,
     required this.endBullet,
     required this.angle,
     required this.bulletPosition,
@@ -20,47 +24,44 @@ class Bullet extends StatefulWidget {
   State<Bullet> createState() => _BulletState();
 }
 
-class _BulletState extends State<Bullet> {
-  late Alignment bStartingPoint = widget.bulletPosition;
-  late double bAngle = widget.angle;
-  late Duration speed = Duration(milliseconds: 100);
-  late double stepSize = 0.03;
-  late double bx;
-  late double by;
-  late double maxBulletField = 1.3;
+class _BulletState extends State<Bullet> with SingleTickerProviderStateMixin {
+  late final Ticker _ticker;
+  
   late double shellSize = 10;
-  Timer? gameLoopTimer;
+  late double bx = widget.bulletPosition.dx + (30 / 2) - 5;
+  late double by = widget.bulletPosition.dy + (30 / 2) - 5;
+  
+  late double stepSize = 7.0; 
+
+  late final double minW = -shellSize;
+  late final double maxW = widget.roomWidth;
+  late final double minH = -shellSize;
+  late final double maxH = widget.roomHeight;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    bx = bStartingPoint.x;
-    by = bStartingPoint.y;
-    gameLoopTimer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
+    
+    // Create a ticker synchronized with the display refresh rate
+    _ticker = createTicker((elapsed) {
       move();
-    });
+    })..start();
   }
 
   @override
   void dispose() {
-    gameLoopTimer?.cancel();
+    _ticker.dispose();
     super.dispose();
   }
 
   void move() {
     setState(() {
-      by -= (cos(bAngle) * (stepSize));
-      bx += (sin(bAngle) * (stepSize));
+      by -= (cos(widget.angle) * stepSize);
+      bx += (sin(widget.angle) * stepSize);
 
-      by = by.clamp(-maxBulletField, maxBulletField);
-      bx = bx.clamp(-maxBulletField, maxBulletField);
-
-      if (by >= maxBulletField ||
-          by <= -maxBulletField ||
-          bx <= -maxBulletField ||
-          bx >= maxBulletField) {
-        gameLoopTimer?.cancel();
+      // Check boundary collision
+      if (by >= maxH || by <= minH || bx <= minW || bx >= maxW) {
+        _ticker.stop();
         widget.endBullet(widget.index);
       }
     });
@@ -68,16 +69,17 @@ class _BulletState extends State<Bullet> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedAlign(
-      alignment: Alignment(bx, by),
-      duration: speed,
-      curve: Curves.linear,
-
+    // Positioned is much lighter than AnimatedPositioned when updating every frame
+    return Positioned(
+      left: bx,
+      top: by,
       child: Container(
         width: shellSize,
         height: shellSize,
-
-        decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.red),
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle, 
+          color: Colors.red,
+        ),
       ),
     );
   }
