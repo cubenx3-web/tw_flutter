@@ -10,11 +10,13 @@ class TankBody extends StatefulWidget {
   final double ty;
   final double roomWidth;
   final double roomHeight;
+  final double tankSize;
   final ValueChanged<Offset> tankPosition;
   final ValueChanged<double> tankAngle;
   final ValueChanged<bool> shoot;
 
   const TankBody({
+    required this.tankSize,
     required this.shoot,
     required this.roomHeight,
     required this.roomWidth,
@@ -34,16 +36,14 @@ class _TankBodyState extends State<TankBody> {
   late double tx = (widget.roomWidth - (tankSize * 2)) / 2;
   late double ty = (widget.roomHeight - (tankSize * 2)) / 2;
   late Duration speed = Duration(milliseconds: 50);
-  late double tankSize = 30;
+  late double tankSize = widget.tankSize;
   late double tankTurn = 0.0;
   late double sharpTurns = 0.03;
   final double stepSize = 3;
   late bool isShoot = false;
 
-
   final FocusNode f = FocusNode();
   Timer? gameLoopTimer;
-  
 
   @override
   void initState() {
@@ -100,8 +100,8 @@ class _TankBodyState extends State<TankBody> {
         ty += (cos(tankTurn) * (stepSize));
       }
 
-      tx = tx.clamp(0, widget.roomWidth - (tankSize * 2)+5);
-      ty = ty.clamp(0, widget.roomHeight - (tankSize * 2)+5);
+      tx = tx.clamp((tankSize/2), widget.roomWidth - ((tankSize *2) - (tankSize/2) ));
+      ty = ty.clamp((tankSize/2), widget.roomHeight -((tankSize *2) - (tankSize/2)));
 
       widget.tankAngle(tankTurn);
       widget.tankPosition(Offset(tx, ty));
@@ -144,7 +144,7 @@ class _TankBodyState extends State<TankBody> {
               color: Colors.blue,
             ),
 
-            child: Gun(),
+            child: Gun(tankSize: widget.tankSize),
           ),
         ),
       ),
@@ -153,7 +153,8 @@ class _TankBodyState extends State<TankBody> {
 }
 
 class Gun extends StatefulWidget {
-  const Gun({ super.key});
+  final double tankSize;
+  const Gun({ required this.tankSize, super.key});
 
   @override
   State<Gun> createState() => _GunState();
@@ -179,8 +180,8 @@ class _GunState extends State<Gun> {
         autofocus: true,
         onKeyEvent: (event) {},
         child: Container(
-          width: 8,
-          height: 15,
+          width: widget.tankSize / 4,
+          height: widget.tankSize / 2,
 
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(2),

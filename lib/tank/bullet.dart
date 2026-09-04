@@ -7,10 +7,14 @@ class Bullet extends StatefulWidget {
   final double angle;
   final double roomWidth;
   final double roomHeight;
+  final double shellSize;
+  final double tankSize;
   final ValueChanged<int> endBullet;
   final int index;
 
   const Bullet({
+    required this.tankSize,
+    required this.shellSize,
     required this.index,
     required this.roomHeight,
     required this.roomWidth,
@@ -26,12 +30,12 @@ class Bullet extends StatefulWidget {
 
 class _BulletState extends State<Bullet> with SingleTickerProviderStateMixin {
   late final Ticker _ticker;
-  
-  late double shellSize = 10;
-  late double bx = widget.bulletPosition.dx + (30 / 2) - 5;
-  late double by = widget.bulletPosition.dy + (30 / 2) - 5;
-  
-  late double stepSize = 7.0; 
+
+  late double shellSize = widget.shellSize;
+  late double bx = widget.bulletPosition.dx + (widget.tankSize / 2) - (shellSize / 2);
+  late double by = widget.bulletPosition.dy + (widget.tankSize / 2) - (shellSize / 2);
+
+  late double stepSize = 7.0;
 
   late final double minW = -shellSize;
   late final double maxW = widget.roomWidth;
@@ -41,7 +45,7 @@ class _BulletState extends State<Bullet> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    
+
     // Create a ticker synchronized with the display refresh rate
     _ticker = createTicker((elapsed) {
       move();
@@ -77,7 +81,7 @@ class _BulletState extends State<Bullet> with SingleTickerProviderStateMixin {
         width: shellSize,
         height: shellSize,
         decoration: const BoxDecoration(
-          shape: BoxShape.circle, 
+          shape: BoxShape.circle,
           color: Colors.red,
         ),
       ),

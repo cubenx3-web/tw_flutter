@@ -19,10 +19,11 @@ class _RoomAState extends State<RoomA> {
   late double tankAngle = 0.0;
   late Offset tankPosition = Offset(0, 0);
 
+  late double tankSize = 20;
+  late double shellSize = tankSize/3;
+
   late int bulletsShot = 0;
   final Map<int, Bullet> bullets = <int, Bullet>{};
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +38,7 @@ class _RoomAState extends State<RoomA> {
           width: roomWidth,
           height: roomHeight,
 
-          padding: EdgeInsets.all(10),
+          
 
           decoration: BoxDecoration(
             border: Border.all(color: Colors.white),
@@ -48,6 +49,7 @@ class _RoomAState extends State<RoomA> {
             children: [
               Stack(children: bullets.values.toList()),
               TankBody(
+                tankSize: tankSize,
                 roomHeight: roomHeight,
                 roomWidth: roomWidth,
                 tx: tx,
@@ -67,6 +69,8 @@ class _RoomAState extends State<RoomA> {
                     shooting = isShooting;
                     if (shooting) {
                       bullets[bulletsShot] = Bullet(
+                        tankSize: tankSize,
+                        shellSize: shellSize,
                         roomHeight: roomHeight,
                         roomWidth: roomWidth,
                         index: bulletsShot,
@@ -97,6 +101,8 @@ class _RoomAState extends State<RoomA> {
                     shooting = isShooting;
                     if (shooting) {
                       bullets[bulletsShot] = Bullet(
+                        tankSize: tankSize,
+                        shellSize: shellSize,
                         roomWidth: roomWidth,
                         roomHeight: roomHeight,
                         index: bulletsShot,
@@ -114,8 +120,6 @@ class _RoomAState extends State<RoomA> {
                   });
                 },
               ),
-
-              
             ],
           ),
         ),
